@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?  @db.VarChar(50) // Puede ser opcional si tu frontend no lo requiere
+  password  String   // Debe guardarse hasheada
+  age       Int      @default(0)
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  posts     Post[]
+}
+
+model Post {
+  id       Int    @id @default(autoincrement())
+  title    String
+  content  String
+  authorId Int
+  author   User   @relation(fields: [authorId], references: [id])
+}
+
+model Book {
+  id        Int      @id @default(autoincrement())
+  title     String
+  author    String
+  price     Float
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
